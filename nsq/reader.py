@@ -5,7 +5,12 @@ import time
 import functools
 import urllib
 import random
-import urlparse
+
+try:
+    import urlparse
+except ImportError:
+    from urllib.parse import urlparse
+
 import cgi
 import inspect
 
@@ -17,10 +22,10 @@ except ImportError:
 from tornado.ioloop import PeriodicCallback
 import tornado.httpclient
 
-from .backoff_timer import BackoffTimer
-from .client import Client
-from . import protocol
-from . import async
+from nsq.backoff_timer import BackoffTimer
+from nsq.client import Client
+from nsq import protocol
+from nsq import async
 
 logger = logging.getLogger(__name__)
 

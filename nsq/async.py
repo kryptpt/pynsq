@@ -134,7 +134,7 @@ class AsyncConn(event.EventedMixin):
             io_loop=None,
             auth_secret=None
         ):
-        assert isinstance(host, (str, unicode))
+        assert isinstance(host, str)
         assert isinstance(port, int)
         assert isinstance(timeout, float)
         assert isinstance(tls_options, (dict, None.__class__))
@@ -144,7 +144,7 @@ class AsyncConn(event.EventedMixin):
         assert isinstance(output_buffer_size, int) and output_buffer_size >= 0
         assert isinstance(output_buffer_timeout, int) and output_buffer_timeout >= 0
         assert isinstance(sample_rate, int) and sample_rate >= 0 and sample_rate < 100
-        assert isinstance(auth_secret, (str, unicode, None.__class__))
+        assert isinstance(auth_secret, (str, None.__class__))
         assert tls_v1 and ssl or not tls_v1, \
             'tls_v1 requires Python 2.6+ or Python 2.5 w/ pip install ssl'
 
@@ -310,7 +310,7 @@ class AsyncConn(event.EventedMixin):
     def send_rdy(self, value):
         try:
             self.send(protocol.ready(value))
-        except Exception, e:
+        except Exception as e:
             self.close()
             self.trigger(
                 event.ERROR,
@@ -341,7 +341,7 @@ class AsyncConn(event.EventedMixin):
         self.on(event.RESPONSE, self._on_identify_response)
         try:
             self.send(protocol.identify(identify_data))
-        except Exception, e:
+        except Exception as e:
             self.close()
             self.trigger(
                 event.ERROR,
@@ -403,7 +403,7 @@ class AsyncConn(event.EventedMixin):
             self.trigger(event.AUTH, conn=self, data=self.auth_secret)
             try:
                 self.send(protocol.auth(self.auth_secret))
-            except Exception, e:
+            except Exception as e:
                 self.close()
                 self.trigger(
                     event.ERROR,
@@ -463,7 +463,7 @@ class AsyncConn(event.EventedMixin):
         try:
             time_ms = self.requeue_delay * message.attempts * 1000 if time_ms < 0 else time_ms
             self.send(protocol.requeue(message.id, time_ms))
-        except Exception, e:
+        except Exception as e:
             self.close()
             self.trigger(event.ERROR, conn=self, error=protocol.SendError(
                 'failed to send REQ %s @ %d' % (message.id, time_ms), e))
@@ -474,7 +474,7 @@ class AsyncConn(event.EventedMixin):
         self.in_flight -= 1
         try:
             self.send(protocol.finish(message.id))
-        except Exception, e:
+        except Exception as e:
             self.close()
             self.trigger(
                 event.ERROR,
@@ -485,7 +485,7 @@ class AsyncConn(event.EventedMixin):
     def _on_message_touch(self, message, **kwargs):
         try:
             self.send(protocol.touch(message.id))
-        except Exception, e:
+        except Exception as e:
             self.close()
             self.trigger(
                 event.ERROR,
